@@ -15,7 +15,7 @@
 /**
  * Back end modules
  */
-$GLOBALS['TL_LANG']['MOD'][''] = array('', '');
+$GLOBALS['TL_LANG']['MOD']['carpet'] = array('Carpet', 'Carpet manager');
 
 
 /**

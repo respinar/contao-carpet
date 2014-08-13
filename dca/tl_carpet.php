@@ -22,12 +22,14 @@ $GLOBALS['TL_DCA']['tl_carpet'] = array
 	'config' => array
 	(
 		'dataContainer'               => 'Table',
+		'ptabel'                      => 'tl_carpet_category',
 		'enableVersioning'            => true,
 		'sql' => array
 		(
 			'keys' => array
 			(
-				'id' => 'primary'
+				'id'  => 'primary',
+				'pid' => 'index'
 			)
 		)
 	),
@@ -38,12 +40,14 @@ $GLOBALS['TL_DCA']['tl_carpet'] = array
 		'sorting' => array
 		(
 			'mode'                    => 1,
-			'fields'                  => array(''),
+			'fields'                  => array('title'),
+			'headerFields'            => array('title'),
+			'panelLayout'             => 'filter;sort,search,limit',
 			'flag'                    => 1
 		),
 		'label' => array
 		(
-			'fields'                  => array(''),
+			'fields'                  => array('title'),
 			'format'                  => '%s'
 		),
 		'global_operations' => array
@@ -101,14 +105,7 @@ $GLOBALS['TL_DCA']['tl_carpet'] = array
 	// Palettes
 	'palettes' => array
 	(
-		'__selector__'                => array(''),
-		'default'                     => '{title_legend},title;'
-	),
-
-	// Subpalettes
-	'subpalettes' => array
-	(
-		''                            => ''
+		'default'                     => '{title_legend},title,alias,author,date;{price_legend},price,discount;{meta_legend},keywords;{properties_legend},knots,width,height,colors,silk;{image_legend},singleSRC;{description_legend:hide},description;{publish_legend},published,featured,start,stop'
 	),
 
 	// Fields
@@ -117,6 +114,14 @@ $GLOBALS['TL_DCA']['tl_carpet'] = array
 		'id' => array
 		(
 			'sql'                     => "int(10) unsigned NOT NULL auto_increment"
+		),
+		'pid' => array
+		(
+			'sql'                     => "int(10) unsigned NOT NULL default '0'"
+		),
+		'sorting' => array
+		(
+			'sql'                     => "int(10) unsigned NOT NULL default '0'"
 		),
 		'tstamp' => array
 		(
@@ -127,8 +132,164 @@ $GLOBALS['TL_DCA']['tl_carpet'] = array
 			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['title'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
-			'eval'                    => array('mandatory'=>true, 'maxlength'=>255),
+			'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
 			'sql'                     => "varchar(255) NOT NULL default ''"
+		),
+		'alias' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['alias'],
+			'exclude'                 => true,
+			'search'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'alias', 'unique'=>true, 'maxlength'=>128, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(128) COLLATE utf8_bin NOT NULL default ''"
+		),
+		'author' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['author'],
+			'default'                 => BackendUser::getInstance()->id,
+			'exclude'                 => true,
+			'inputType'               => 'select',
+			'foreignKey'              => 'tl_user.name',
+			'eval'                    => array('doNotCopy'=>true, 'mandatory'=>true, 'chosen'=>true, 'includeBlankOption'=>true, 'tl_class'=>'w50'),
+			'sql'                     => "int(10) unsigned NOT NULL default '0'",
+			'relation'                => array('type'=>'hasOne', 'load'=>'eager')
+		),
+		'date' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['date'],
+			'default'                 => time(),
+			'exclude'                 => true,
+			'filter'                  => true,
+			'sorting'                 => true,
+			'flag'                    => 8,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'date', 'doNotCopy'=>true, 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+			'sql'                     => "int(10) unsigned NOT NULL default '0'"
+		),
+		'price' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['price'],
+			'exclude'                 => true,
+			'filter'                  => flase,
+			'inputType'               => 'text',
+			'eval'                    => array('mandatory'=>true,'rgxp'=>'digit', 'maxlength'=>12, 'tl_class'=>'w50'),
+			'sql'                     => "int(12) NOT NULL default '0'"
+		),
+		'discount' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['discount'],
+			'exclude'                 => true,
+			'filter'                  => flase,
+			'inputType'               => 'inputUnit',
+			'options'                 => array('%'),
+			'eval'                    => array('mandatory'=>true,'rgxp'=>'digit', 'maxlength'=>12, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(255) NOT NULL default ''"
+		),
+		'keywords' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['keywords'],
+			'exclude'                 => true,
+			'inputType'               => 'textarea',
+			'search'                  => true,
+			'eval'                    => array('style'=>'height:60px', 'decodeEntities'=>true),
+			'sql'                     => "text NULL"
+		),
+		'width' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['width'],
+			'exclude'                 => true,
+			'filter'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'digit','maxlength'=>4, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(4) NOT NULL default ''"
+		),
+		'height' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['height'],
+			'exclude'                 => true,
+			'filter'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'digit', 'maxlength'=>4, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(4) NOT NULL default ''"
+		),
+		'colors' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['colors'],
+			'exclude'                 => true,
+			'filter'                  => flase,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'digit', 'maxlength'=>3, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(3) NOT NULL default ''"
+		),
+		'knots' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['knots'],
+			'exclude'                 => true,
+			'filter'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'digit', 'maxlength'=>4),
+			'sql'                     => "varchar(4) NOT NULL default '50'"
+		),
+		'silk' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['silk'],
+			'exclude'                 => true,
+			'filter'                  => flase,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'digit', 'maxlength'=>3, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(3) NOT NULL default ''"
+		),
+		'addImage' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['addImage'],
+			'exclude'                 => true,
+			'inputType'               => 'checkbox',
+			'eval'                    => array('submitOnChange'=>true),
+			'sql'                     => "char(1) NOT NULL default ''"
+		),
+		'singleSRC' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['singleSRC'],
+			'exclude'                 => true,
+			'inputType'               => 'fileTree',
+			'eval'                    => array('filesOnly'=>true, 'extensions'=>Config::get('validImageTypes'), 'fieldType'=>'radio', 'mandatory'=>true),
+			'sql'                     => "binary(16) NULL"
+		),
+		'featured' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['featured'],
+			'exclude'                 => true,
+			'filter'                  => true,
+			'inputType'               => 'checkbox',
+			'eval'                    => array('tl_class'=>'w50'),
+			'sql'                     => "char(1) NOT NULL default ''"
+		),
+		'published' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['published'],
+			'exclude'                 => true,
+			'filter'                  => true,
+			'flag'                    => 1,
+			'inputType'               => 'checkbox',
+			'eval'                    => array('doNotCopy'=>true, 'tl_class'=>'w50'),
+			'sql'                     => "char(1) NOT NULL default ''"
+		),
+		'start' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['start'],
+			'exclude'                 => true,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+			'sql'                     => "varchar(10) NOT NULL default ''"
+		),
+		'stop' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet']['stop'],
+			'exclude'                 => true,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+			'sql'                     => "varchar(10) NOT NULL default ''"
 		)
 	)
 );

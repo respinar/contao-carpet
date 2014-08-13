@@ -14,53 +14,26 @@
 
 /**
  * BACK END MODULES
- *
- * Back end modules are stored in a global array called "BE_MOD". You can add
- * your own modules by adding them to the array.
- *
- * $GLOBALS['BE_MOD'] = array
- * (
- *    'group_1' => array
- *    (
- *       'module_1' => array
- *       (
- *          'tables'       => array('table_1', 'table_2'),
- *          'callback'     => 'ClassName',
- *          'key'          => array('Class', 'method'),
- *          'icon'         => 'path/to/icon.gif',
- *          'stylesheet'   => 'path/to/stylesheet.css',
- *          'javascript'   => 'path/to/javascript.js'
- *       )
- *    )
- * );
- *
- * Not all of the keys mentioned above (like "tables", "key", "callback" etc.)
- * have to be set. Take a look at the system/modules/core/config/config.php
- * file to see how back end modules are configured.
  */
+
+$GLOBALS['BE_MOD']['content']['carpet'] = array
+		(
+			'tables'   => array('tl_carpet_category','tl_carpet'),
+			'icon'     => 'system/modules/carpet/assets/icon.png'
+		)
+;
 
 
 /**
  * FRONT END MODULES
- *
- * Front end modules are stored in a global array called "FE_MOD". You can add
- * your own modules by adding them to the array.
- *
- * $GLOBALS['FE_MOD'] = array
- * (
- *    'group_1' => array
- *    (
- *       'module_1' => 'ModuleClass1',
- *       'module_2' => 'ModuleClass2'
- *    )
- * );
- *
- * The keys (like "module_1") are the module names, which are e.g. stored in the
- * database and used to find the corresponding translations. The values (like
- * "ModuleClass1") are the names of the classes, which will be loaded when the
- * module is rendered. The class "ModuleClass1" has to be stored in a file
- * named "ModuleClass1.php" in your module folder.
  */
+
+$GLOBALS['FE_MOD']['carpet'] = array
+(
+	'carperlist'   => 'ModulecarpetList',
+	'carperditail' => 'ModulecarpetDetail',
+	
+);
 
 
 /**

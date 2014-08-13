@@ -22,6 +22,8 @@ $GLOBALS['TL_DCA']['tl_carpet_category'] = array
 	'config' => array
 	(
 		'dataContainer'               => 'Table',
+		'ctable'                      => array('tl_carpet'),
+		'switchToEdit'                => true,
 		'enableVersioning'            => true,
 		'sql' => array
 		(
@@ -38,12 +40,13 @@ $GLOBALS['TL_DCA']['tl_carpet_category'] = array
 		'sorting' => array
 		(
 			'mode'                    => 1,
-			'fields'                  => array(''),
-			'flag'                    => 1
+			'fields'                  => array('title'),
+			'flag'                    => 1,
+			'panelLayout'             => 'filter;search,limit'
 		),
 		'label' => array
 		(
-			'fields'                  => array(''),
+			'fields'                  => array('title'),
 			'format'                  => '%s'
 		),
 		'global_operations' => array
@@ -61,8 +64,14 @@ $GLOBALS['TL_DCA']['tl_carpet_category'] = array
 			'edit' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_carpet_category']['edit'],
-				'href'                => 'act=edit',
+				'href'                => 'table=tl_carpet',
 				'icon'                => 'edit.gif'
+			),
+			'editheader' => array
+			(
+				'label'               => &$GLOBALS['TL_LANG']['tl_carpet_category']['editheader'],
+				'href'                => 'act=edit',
+				'icon'                => 'header.gif'
 			),
 			'copy' => array
 			(
@@ -101,14 +110,14 @@ $GLOBALS['TL_DCA']['tl_carpet_category'] = array
 	// Palettes
 	'palettes' => array
 	(
-		'__selector__'                => array(''),
-		'default'                     => '{title_legend},title;'
+		'__selector__'                => array('protected'),
+		'default'                     => '{title_legend},title;{redirect_legend},jumpTo;{image_legend},singleSRC;{protected_legend:hide},protected;'
 	),
 
 	// Subpalettes
 	'subpalettes' => array
 	(
-		''                            => ''
+		'protected'                   => 'groups'
 	),
 
 	// Fields
@@ -129,6 +138,57 @@ $GLOBALS['TL_DCA']['tl_carpet_category'] = array
 			'inputType'               => 'text',
 			'eval'                    => array('mandatory'=>true, 'maxlength'=>255),
 			'sql'                     => "varchar(255) NOT NULL default ''"
+		),
+		'jumpTo' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet_category']['jumpTo'],
+			'exclude'                 => true,
+			'inputType'               => 'pageTree',
+			'foreignKey'              => 'tl_page.title',
+			'eval'                    => array('mandatory'=>true, 'fieldType'=>'radio'),
+			'sql'                     => "int(10) unsigned NOT NULL default '0'",
+			'relation'                => array('type'=>'belongsTo', 'load'=>'lazy')
+		),
+		'singleSRC' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['singleSRC'],
+			'exclude'                 => true,
+			'inputType'               => 'fileTree',
+			'eval'                    => array('filesOnly'=>true, 'extensions'=>Config::get('validImageTypes'), 'fieldType'=>'radio', 'mandatory'=>true),
+			'sql'                     => "binary(16) NULL"
+		),
+		'protected' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet_category']['protected'],
+			'exclude'                 => true,
+			'inputType'               => 'checkbox',
+			'eval'                    => array('submitOnChange'=>true),
+			'sql'                     => "char(1) NOT NULL default ''"
+		),
+		'groups' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_carpet_category']['groups'],
+			'exclude'                 => true,
+			'inputType'               => 'checkbox',
+			'foreignKey'              => 'tl_member_group.name',
+			'eval'                    => array('mandatory'=>true, 'multiple'=>true),
+			'sql'                     => "blob NULL",
+			'relation'                => array('type'=>'hasMany', 'load'=>'lazy')
 		)
 	)
 );
+
+/**
+ * Class tl_carpet_category
+ *
+ * Provide miscellaneous methods that are used by the data configuration array.
+ * @copyright  Leo Feyer 2005-2014
+ * @author     Leo Feyer <https://contao.org>
+ * @package    Carpet
+ */
+class tl_carpet_category extends Backend
+{
+
+
+}
+

@@ -1,0 +1,13 @@
+
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+
+  <?php if (empty($this->carpets)): ?>
+    <p class="empty"><?php echo $this->empty; ?></p>
+  <?php else: ?>
+    <?php echo implode('', $this->carpets); ?>
+    <?php echo $this->pagination; ?>
+  <?php endif; ?>
+
+<?php $this->endblock(); ?>
